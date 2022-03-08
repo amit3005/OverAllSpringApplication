@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Login Page</title>
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
+ <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+</head>
+<body>
+<div class="container">
+<div class="row"> 
+<div class="col-md-6 offset-md-3">
+<div class="jumbotron"><h3>Login Page</h3></div>
+<div class="alert alert-danger" id="error" style="display:none">${error}</div>
+<form th:action="@{/login}" method="Post" >
+		<div class="mb-3">
+		<b><label class="form-label">EmailId :</label></b>
+		<input type="email" name="appUserEmailId" id="appUserEmailId" onblur="isValidEmailId()" autocomplete="true" class="form-control" required="required" >
+		<div class="mb-3">
+		<b><label class="form-label">Password :</label></b>
+		<input type="password" name="appUserPassword" id="appUserPassword" class="form-control" required="required" autocomplete="true">
+		<div class="mb-3">
+		<input id="userRegister" type="submit"class="btn btn-primary mb-3">
+		</div>
+		</form>
+</div>
+</div>
+</div>
+</body>
+</html>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>otp Validation Page</title>
+</head>
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<body>
+<script type="text/javascript">
+function checkOtp(){
+	var otpText = $('#registrationOtp').val();
+	var generatedOtp = $('#generatedOtp').val();
+	if(otpText!=null && otpText!=undefined){
+		$('#registrationOtpHelp').html('');
+		$.ajax({
+			type: 'GET',
+			url: '/checkOtp/' + generatedOtp + '/' +otpText,
+			success: function(result) {
+				if(result.includes('Not Valid')){
+					$('#registrationOtpHelp').html('Enter Valid OTP');
+				}else{
+					location.replace("/home")	
+				}
+			},
+			error :function(result){
+				$('#registrationOtp').show();
+				$('#registrationOtp').html('Plese try Again');
+			}
+		});
+	}else{
+		$('#registrationOtp').html('Plase Enter OTP');
+	}
+}
+function generateOtp(){
+	var emailId = $('#email').val();
+	location.replace("/otpgeneration/"+emailId);
+}
+
+</script>
+<div class="container">
+<div class="row"> 
+<div class="col-md-6 offset-md-3">
+<div class="jumbotron"><h3>Otp Validation</h3></div>
+<div class="alert alert-danger" id="error" style="display:none">${error}</div>
+		<div class="mb-3">
+		<b><label class="form-label">OTP :</label></b>
+		<input type="text" name="registrationOtp" id="registrationOtp" class="form-control" required="required" autocomplete="true">
+		<div id="registrationOtpHelp" class="form-text"></div>
+		</div>
+		<div class="mb-3">
+		<input id="userRegister" type="button"class="btn btn-primary mb-3" value="Check OTP" onclick="checkOtp()">
+		<input id="generatedOtp" type="hidden" th:value="${otp}">
+		<input id="email" type="hidden" th:value="${emailId}">
+		</div>
+		<div class="mb-3">
+		<input id="userRegister" type="button"class="btn btn-primary mb-3" value="Generate OTP" onclick="generateOtp()">
+		</div>
+</div>
+</div>
+</div>
+
+</body>
+</html>

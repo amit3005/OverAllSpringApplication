@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>SignUp Page</title>
+ <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
+ <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+</head>
+<body>
+<script type="text/javascript">
+	function getStatebyCountry(){
+		var countryId = $('#countryId').val();
+		if(countryId>0){
+			$('#countryHelp').html('');
+			$('#stateHelp').html('');
+			$.ajax({
+				type: 'GET',
+				url: '/getCountryWiseState/' + countryId,
+				success: function(result) {
+					var result = JSON.parse(result);
+					var s = '';
+					for(var i = 0; i < result.length; i++) {
+						/* s += '<option value="' + result[i].countryId + '">' + result[i].countryName + '</option>'; */
+						s += '<option value="' + result[i][0] + '">' + result[i][1] + '</option>';
+					}
+					$('#stateId').html(s);
+				},
+				error :function(result){
+					result;
+				}
+			});
+		}else{
+			$('#stateId').html('<option value=0>Please Select</option>');
+		}
+	}
+	function isValidEmailId(){
+		var emailId = $('#appUserEmailId').val();
+		$.ajax({
+			type: 'GET',
+			url: '/checkEmailIdExist/' + emailId,
+			success: function(result) {
+				if(result == 'NotValid'){
+					$('#emailHelp').html('EmailId already Exist');
+					$('#userRegister').attr('disabled','disabled');
+				}else{
+					$('#emailHelp').html('');
+					$('#userRegister').removeAttr('disabled','disabled');
+				}
+			}
+		});
+	}
+	function validate(){
+		var isValid=true;
+		isValidEmailId();
+		var countryId = $('#countryId').val();
+		var stateId = $('#stateId').val();
+		var data = $('#emailHelp').val();
+		if(data!=''){
+			$('#emailHelp').html('Plase Enter Valid EmailId');
+			isValid= false;
+		}else{
+			$('#emailHelp').html('');
+			isValid= true;
+		}
+		if(countryId==0){
+			$('#countryHelp').html('Please Select Country from list');
+			isValid= false;
+		}else{
+			$('#countryHelp').html('');
+			isValid=true;
+		}
+		if(stateId==0){
+			$('#stateHelp').html('Plase Select State From list');
+			isValid= false;
+		}else{
+			$('#stateHelp').html('');
+			isValid=true;
+		}
+		return isValid;
+	}
+
+</script>
+<div class="container">
+<div class="row"> 
+<div class="col-md-6 offset-md-3">
+<div class="jumbotron"><h3>Sign Up</h3></div>
+<div class="alert alert-danger" id="error" style="display:none" th:value="${error}"></div>
+<form th:action="@{/registeruser}" onsubmit="return validate()" th:object="${appUser}" method="Post" >
+		<div class="mb-3">
+		<b><label class="form-label">UserName :</label></b>
+		<input type="text" name="appUserName" id="appUserName" class="form-control" th:field="${appUser.appUserName}" required="required" autocomplete="true">
+		</div>
+		<div class="mb-3">
+		<b><label class="form-label">EmailId :</label></b>
+		<input type="email" name="appUserEmailId" id="appUserEmailId" onblur="isValidEmailId()" autocomplete="true" th:field="${appUser.appUserEmailId}" class="form-control" required="required" >
+		<div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+		</div>
+		<div class="mb-3">
+		<b><label class="form-label">MobileNumber :</label></b>
+		<input type="text" name="appUserMobileNumber" id="appUserMobileNumber" th:field="${appUser.appUserMobileNumber}" class="form-control" required="required" autocomplete="true">
+		</div>
+		<div class="mb-3">
+		<b><label class="form-label">Password :</label></b>
+		<input type="password" name="appUserPassword" id="appUserPassword" th:field="${appUser.appUserPassword}" class="form-control" required="required" autocomplete="true">
+		<div id="passwordHelpBlock" class="form-text">
+  		Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+		</div>
+		</div>
+		<div class="mb-3">
+		<b><label class="form-select">Country :</label></b>
+		<select id="countryId" onchange="getStatebyCountry()" name="countryId" th:field="${appUser.appCountry.countryId}"  class="form-control" required="required" autocomplete="true">
+		<option value="0" selected>Please select</option>
+		<option th:each="country :${countryList}" th:value="${country.countryId}" th:text="${country.countryName}"></select>
+		<div id="countryHelp" class="form-text"></div> 
+		</div>
+		<div class="mb-3">
+		<b><label class="form-select">State :</label></b>
+		<select id="stateId" name="stateId" th:field="${appUser.appState.stateId}" class="form-control"  required="required" >
+		<option value="0" selected>Please select</option></select>
+		<div id="stateHelp" class="form-text"></div> 
+		</div>
+		<div class="mb-3">
+		<b><label class="form-label">City :</label></b>
+		<input type="text" name="appUserCity" id="appUserCity" th:field="${appUser.appUserCity}" class="form-control" required="required" autocomplete="true">
+		</div>
+		<div class="mb-3">
+		<input id="userRegister" type="submit"class="btn btn-primary mb-3">
+		</div>
+</form>
+</div>
+</div>
+</div>
+</body>
+</html>
